@@ -34,7 +34,7 @@ eks_subnet_ids                     = ["<subnet-id-a>", "<subnet-id-b>", "<subnet
 
 ### Existing EKS cluster
 
-When `create_eks_cluster` is `false`, supply the name of your existing cluster so the module can attach IAM roles, Pod Identity associations, and (optionally) an OIDC provider to it:
+When `create_eks_cluster` is `false`, set `existing_eks_cluster_name` if you want this module to manage Pod Identity (addon + associations) on that cluster:
 
 ```hcl
 create_eks_cluster        = false
@@ -86,7 +86,7 @@ TFE and the AWS Load Balancer Controller each need an EKS-native way to assume a
 
 ```hcl
 # --- TFE ---
-create_tfe_eks_irsa         = true  # IRSA; requires an OIDC provider (create one with `create_eks_oidc_provider` or supply `eks_oidc_provider_arn`/`eks_oidc_provider_url`)
+create_tfe_eks_irsa         = true  # IRSA; requires an OIDC provider (set `create_eks_oidc_provider = true`, or set `create_eks_oidc_provider = false` and provide `eks_oidc_provider_arn`)
 create_tfe_eks_pod_identity = false # Pod Identity; requires `create_eks_cluster = true` or a valid `existing_eks_cluster_name`
 
 # --- AWS Load Balancer Controller ---
@@ -94,12 +94,16 @@ create_aws_lb_controller_irsa         = true
 create_aws_lb_controller_pod_identity = false
 ```
 
-If you choose IRSA and are bringing your own EKS cluster, set `create_eks_oidc_provider = false` and provide the existing provider's ARN and URL:
+If you choose IRSA for an existing EKS cluster, either have this module create the OIDC provider (requires the cluster issuer URL when `create_eks_cluster = false`), or reference an existing OIDC provider:
 
 ```hcl
+# Option A: create the OIDC provider
+create_eks_oidc_provider = true
+eks_oidc_provider_url    = "<eks-oidc-issuer-url>"
+
+# Option B: use an existing OIDC provider
 create_eks_oidc_provider = false
 eks_oidc_provider_arn    = "<existing-oidc-provider-arn>"
-eks_oidc_provider_url    = "<existing-oidc-provider-url>"
 ```
 
 If you choose Pod Identity, the module creates the `eks-pod-identity-agent` EKS addon automatically (pin its version with `eks_pod_identity_addon_version`, or leave `null` to use the latest).
