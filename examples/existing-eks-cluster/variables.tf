@@ -2,19 +2,6 @@
 # SPDX-License-Identifier: MPL-2.0
 
 #------------------------------------------------------------------------------
-# Provider
-#------------------------------------------------------------------------------
-variable "region" {
-  type        = string
-  description = "AWS region where resources will be created."
-
-  validation {
-    condition     = can(regex("^([a-z]{2}-[a-z]+-\\d{1})$", var.region))
-    error_message = "Value must be in a valid AWS region format (e.g. `us-east-1`, `eu-west-2`)."
-  }
-}
-
-#------------------------------------------------------------------------------
 # Common
 #------------------------------------------------------------------------------
 variable "friendly_name_prefix" {
@@ -385,6 +372,12 @@ variable "eks_nodegroup_scaling_config" {
 variable "eks_nodegroup_ebs_kms_key_arn" {
   type        = string
   description = "ARN of KMS customer managed key (CMK) to encrypt EKS node group EBS volumes."
+  default     = null
+}
+
+variable "eks_nodegroup_user_data" {
+  type        = string
+  description = "Base64-encoded user data to apply to the EKS node group launch template (e.g. via `base64encode()`). When `null`, no `user_data` is applied to the launch template and the AMI's default bootstrap behavior is used."
   default     = null
 }
 
