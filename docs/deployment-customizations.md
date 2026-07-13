@@ -72,6 +72,14 @@ eks_nodegroup_ami_id   = "<my-custom-ami-id>"
 
 >📝 Note: The launch template always enforces IMDSv2 (`http_tokens = "required"`) and encrypts the root EBS volume by default. To encrypt the EBS volume with a customer-managed KMS key instead of the AWS-managed key, see the [KMS](#kms) section below.
 
+To run custom bootstrap logic on worker nodes at launch (_e.g._ additional `containerd`/`kubelet` configuration, custom `nodeadm`/bootstrap scripts, host hardening), set `eks_nodegroup_user_data` to your base64-encoded user data:
+
+```hcl
+eks_nodegroup_user_data = base64encode(file("${path.module}/my-nodegroup-user-data.sh"))
+```
+
+>📝 Note: `eks_nodegroup_user_data` defaults to `null`. When left `null`, no `user_data` argument is applied to the `aws_launch_template` resource and the selected AMI's default bootstrap behavior is used unmodified.
+
 ### IAM roles for service accounts (IRSA) vs. Pod Identity
 
 TFE and the AWS Load Balancer Controller each need an EKS-native way to assume an AWS IAM role from within the cluster. This module supports both of the AWS-supported mechanisms; choose one per workload (you cannot enable both IRSA and Pod Identity for the same workload):

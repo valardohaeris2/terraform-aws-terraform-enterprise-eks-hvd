@@ -375,6 +375,12 @@ variable "eks_nodegroup_ebs_kms_key_arn" {
   default     = null
 }
 
+variable "eks_nodegroup_user_data" {
+  type        = string
+  description = "Base64-encoded user data to apply to the EKS node group launch template (e.g. via `base64encode()`). When `null`, no `user_data` is applied to the launch template and the AMI's default bootstrap behavior is used."
+  default     = null
+}
+
 #------------------------------------------------------------------------------
 # RDS Aurora PostgreSQL (database)
 #------------------------------------------------------------------------------

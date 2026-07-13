@@ -103,6 +103,8 @@ resource "aws_launch_template" "tfe_eks_nodegroup" {
 
   ebs_optimized = true
 
+  user_data = var.eks_nodegroup_user_data
+
   // https://support.hashicorp.com/hc/en-us/articles/35213717169427-Terraform-Enterprise-FDO-fails-to-start-with-EKS-version-1-30
   metadata_options {
     http_tokens                 = "required"
