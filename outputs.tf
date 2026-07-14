@@ -46,8 +46,8 @@ output "eks_cluster_certificate_authority_data" {
 }
 
 output "eks_cluster_endpoint" {
-  value       = try("${aws_eks_cluster.tfe[0].name}.${data.aws_region.current.region}.eks.amazonaws.com", null)
-  description = "Endpoint DNS name for the TFE EKS cluster, derived from the cluster name and current AWS region (`<eks-cluster-name>.<region>.eks.amazonaws.com`). Useful for building a custom EKS node group `user_data` template."
+  value       = try(aws_eks_cluster.tfe[0].endpoint, null)
+  description = "Endpoint URL for the TFE EKS cluster (from `aws_eks_cluster.tfe[0].endpoint`). Useful for building a custom EKS node group `user_data` template."
 }
 
 #------------------------------------------------------------------------------
