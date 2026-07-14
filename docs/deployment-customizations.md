@@ -80,6 +80,53 @@ eks_nodegroup_user_data = base64encode(file("${path.module}/my-nodegroup-user-da
 
 >📝 Note: `eks_nodegroup_user_data` defaults to `null`. When left `null`, no `user_data` argument is applied to the `aws_launch_template` resource and the selected AMI's default bootstrap behavior is used unmodified.
 
+#### Building `eks_nodegroup_user_data` from the EKS cluster's CA data and endpoint
+
+Custom bootstrap scripts often need to talk to the EKS cluster directly (_e.g._ to write the cluster CA bundle to disk, or to point `kubelet`/`nodeadm` at the cluster's endpoint). To support this without the module rendering a template on your behalf, the module exposes two outputs derived from the `aws_eks_cluster.tfe` resource:
+
+| Output | Description |
+|---|---|
+| `eks_cluster_certificate_authority_data` | Base64-encoded certificate authority data for the TFE EKS cluster (`aws_eks_cluster.tfe[0].certificate_authority[0].data`). |
+| `eks_cluster_endpoint` | `<eks-cluster-name>.<region>.eks.amazonaws.com`, derived from the `aws_eks_cluster.tfe` resource name and the current AWS region. |
+
+Because the EKS cluster must exist before these outputs have values, and the node group's launch template needs `eks_nodegroup_user_data` at creation time, use a two-step, `-target`ed apply combined with your own `templatefile()`/`base64encode()` call in your root configuration:
+
+1. Create the EKS cluster first (before the node group needs `user_data`), targeting just the cluster resource inside the module:
+
+   ```sh
+   terraform apply -target='module.tfe.aws_eks_cluster.tfe'
+   ```
+
+2. Reference the module outputs from your own root configuration to render an externally defined template and pass the result in as `eks_nodegroup_user_data`:
+
+   ```hcl
+   locals {
+     eks_nodegroup_user_data = base64encode(templatefile("${path.module}/templates/my-nodegroup-user-data.sh.tftpl", {
+       cluster_certificate_authority_data = module.tfe.eks_cluster_certificate_authority_data
+       cluster_endpoint                   = module.tfe.eks_cluster_endpoint
+     }))
+   }
+
+   module "tfe" {
+     source = "..."
+
+     # ...
+     eks_nodegroup_user_data = local.eks_nodegroup_user_data
+   }
+   ```
+
+   Example `my-nodegroup-user-data.sh.tftpl`:
+
+   ```sh
+   #!/bin/bash
+   echo "${cluster_certificate_authority_data}" | base64 -d > /etc/kubernetes/pki/ca.crt
+   echo "Bootstrapping against ${cluster_endpoint}"
+   ```
+
+3. Run a normal `terraform apply` to create (or update) the node group's launch template with the rendered, base64-encoded `user_data`.
+
+>📝 Note: The `-target` apply in step 1 is only required on the initial `apply` before the node group exists; the cluster only needs to exist once for its outputs to be available. Subsequent applies (_e.g._ to change the template contents) do not require `-target`.
+
 ### IAM roles for service accounts (IRSA) vs. Pod Identity
 
 TFE and the AWS Load Balancer Controller each need an EKS-native way to assume an AWS IAM role from within the cluster. This module supports both of the AWS-supported mechanisms; choose one per workload (you cannot enable both IRSA and Pod Identity for the same workload):
