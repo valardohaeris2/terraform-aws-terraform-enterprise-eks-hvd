@@ -87,7 +87,7 @@ Custom bootstrap scripts often need to talk to the EKS cluster directly (_e.g._ 
 | Output | Description |
 |---|---|
 | `eks_cluster_certificate_authority_data` | Base64-encoded certificate authority data for the TFE EKS cluster (`aws_eks_cluster.tfe[0].certificate_authority[0].data`). |
-| `eks_cluster_endpoint` | `<eks-cluster-name>.<region>.eks.amazonaws.com`, derived from the `aws_eks_cluster.tfe` resource name and the current AWS region. |
+| `eks_cluster_endpoint` | EKS API server endpoint URL for the TFE EKS cluster (`aws_eks_cluster.tfe[0].endpoint`, e.g. `https://<cluster-id>.<region>.eks.amazonaws.com`). |
 
 Because the EKS cluster must exist before these outputs have values, and the node group's launch template needs `eks_nodegroup_user_data` at creation time, use a two-step, `-target`ed apply combined with your own `templatefile()`/`base64encode()` call in your root configuration:
 
