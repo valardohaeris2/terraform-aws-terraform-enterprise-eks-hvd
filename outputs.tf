@@ -40,6 +40,16 @@ output "eks_cluster_security_group_id" {
   description = "ID of the default cluster security group created by EKS."
 }
 
+output "eks_cluster_certificate_authority_data" {
+  value       = try(aws_eks_cluster.tfe[0].certificate_authority[0].data, null)
+  description = "Base64-encoded certificate authority data for the TFE EKS cluster. Useful for building a custom EKS node group `user_data` template (e.g. via `-target` and an externally defined `templatefile()`/`base64encode()` call) without the module rendering the template itself."
+}
+
+output "eks_cluster_endpoint" {
+  value       = try(aws_eks_cluster.tfe[0].endpoint, null)
+  description = "Endpoint URL for the TFE EKS cluster (from `aws_eks_cluster.tfe[0].endpoint`). Useful for building a custom EKS node group `user_data` template."
+}
+
 #------------------------------------------------------------------------------
 # Database
 #------------------------------------------------------------------------------
