@@ -50,6 +50,16 @@ output "eks_cluster_endpoint" {
   description = "Endpoint URL for the TFE EKS cluster (from `aws_eks_cluster.tfe[0].endpoint`). Useful for building a custom EKS node group `user_data` template."
 }
 
+output "oidc_provider_arn" {
+  value       = try(aws_iam_openid_connect_provider.tfe_eks_irsa[0].arn, null)
+  description = "ARN of the OIDC provider for the EKS cluster. Required for configuring IRSA (IAM Roles for Service Accounts)."
+}
+
+output "oidc_provider" {
+  value       = try(aws_iam_openid_connect_provider.tfe_eks_irsa[0].url, null)
+  description = "URL of the OIDC provider for the EKS cluster. Required for configuring IRSA (IAM Roles for Service Accounts)."
+}
+
 #------------------------------------------------------------------------------
 # Database
 #------------------------------------------------------------------------------
