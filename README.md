@@ -504,6 +504,8 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 | <a name="output_elasticache_replication_group_arn"></a> [elasticache\_replication\_group\_arn](#output\_elasticache\_replication\_group\_arn) | ARN of ElastiCache Replication Group (Redis) cluster. |
 | <a name="output_elasticache_replication_group_id"></a> [elasticache\_replication\_group\_id](#output\_elasticache\_replication\_group\_id) | ID of ElastiCache Replication Group (Redis) cluster. |
 | <a name="output_elasticache_replication_group_primary_endpoint_address"></a> [elasticache\_replication\_group\_primary\_endpoint\_address](#output\_elasticache\_replication\_group\_primary\_endpoint\_address) | Primary endpoint address of ElastiCache Replication Group (Redis) cluster. |
+| <a name="output_oidc_provider"></a> [oidc\_provider](#output\_oidc\_provider) | URL of the OIDC provider for the EKS cluster. Required for configuring IRSA (IAM Roles for Service Accounts). |
+| <a name="output_oidc_provider_arn"></a> [oidc\_provider\_arn](#output\_oidc\_provider\_arn) | ARN of the OIDC provider for the EKS cluster. Required for configuring IRSA (IAM Roles for Service Accounts). |
 | <a name="output_rds_aurora_cluster_arn"></a> [rds\_aurora\_cluster\_arn](#output\_rds\_aurora\_cluster\_arn) | ARN of RDS Aurora database cluster. |
 | <a name="output_rds_aurora_cluster_endpoint"></a> [rds\_aurora\_cluster\_endpoint](#output\_rds\_aurora\_cluster\_endpoint) | RDS Aurora database cluster endpoint. |
 | <a name="output_rds_aurora_cluster_members"></a> [rds\_aurora\_cluster\_members](#output\_rds\_aurora\_cluster\_members) | List of instances that are part of this RDS Aurora database cluster. |
